@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Bulk-delete cloud items (torrents, usenet, web downloads) from a TorBox account."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = { text = "GPL-2.0-only" }
 dependencies = []
 
 [project.scripts]

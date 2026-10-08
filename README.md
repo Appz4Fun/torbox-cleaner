@@ -87,4 +87,4 @@ npm install && npm run docs:dev   # docs at http://localhost:5173
 
 ## License
 
-MIT
+GPL-2.0-only. See [LICENSE](LICENSE).
