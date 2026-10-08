@@ -1,6 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
+  base: process.env.DOCS_BASE || '/',
   title: 'torbox-cleaner',
   description: 'Bulk-delete cloud items from your TorBox account.',
   cleanUrls: true,

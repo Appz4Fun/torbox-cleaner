@@ -174,6 +174,21 @@ uv run pytest                     # unit tests; no network access
 npm install && npm run docs:dev   # docs at http://localhost:5173
 ```
 
+## GitHub Pages documentation
+
+In the GitHub repository, set **Settings → Pages → Build and deployment →
+Source** to **GitHub Actions**. The documentation workflow builds and deploys
+only on pushes to `main`, including merged pull requests. It has no manual,
+scheduled, or pull-request trigger. Every push to `main` rebuilds the docs.
+
+The workflow uses the Pages base path automatically, so links and assets work
+under the repository URL or a configured custom domain. Local development
+continues to use `/`. To check a repository subpath locally:
+
+```bash
+DOCS_BASE=/torbox-cleaner/ npm run docs:build
+```
+
 ## License
 
 GPL-2.0-only. See [LICENSE](LICENSE).
