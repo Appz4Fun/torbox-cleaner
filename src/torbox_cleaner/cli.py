@@ -10,6 +10,13 @@ from pathlib import Path
 
 from torbox_cleaner import __version__
 from torbox_cleaner.api import KINDS, Item, TorBoxClient, TorBoxError
+from torbox_cleaner.config import (
+    ENV_KEY,
+    default_env_file,
+    is_valid_api_key,
+    load_dotenv,
+    run_setup,
+)
 from torbox_cleaner.filters import format_size, parse_size, select
 
 # TorBox allows 300 requests/min per token; stay comfortably under it.
@@ -17,6 +24,7 @@ DELETE_INTERVAL = 0.25
 
 EPILOG = """\
 examples:
+  torbox-cleaner --setup                          save your API key (opens TorBox settings)
   torbox-cleaner --delete-all --dry-run           list everything that would be deleted
   torbox-cleaner --delete-all                     delete every item in the account
   torbox-cleaner --filter-size 50GB --dry-run     list items larger than 50 GB
@@ -24,22 +32,10 @@ examples:
   torbox-cleaner --filter-size 50GB --filter-name framestor --yes
 
 Filters combine with AND. Name matching is case-insensitive.
-The API key is read from TORBOX_API_KEY (environment or ./.env).
+The API key is read from TORBOX_API_KEY in the environment, or from the
+.env file: <clone>/.env when run with `uv run` from a clone, otherwise
+~/.config/torbox-cleaner/.env. Run --setup to create or update it.
 """
-
-
-def load_dotenv(path: Path) -> None:
-    """Load KEY=VALUE lines from ``path`` into os.environ without overriding existing values."""
-    if not path.is_file():
-        return
-    for line in path.read_text().splitlines():
-        line = line.strip()
-        if not line or line.startswith("#") or "=" not in line:
-            continue
-        key, _, value = line.partition("=")
-        key = key.strip().removeprefix("export ").strip()
-        value = value.strip().strip("'\"")
-        os.environ.setdefault(key, value)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -49,7 +45,14 @@ def build_parser() -> argparse.ArgumentParser:
         epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    sel = p.add_argument_group("selection (at least one required)")
+    p.add_argument(
+        "--setup",
+        action="store_true",
+        help="open TorBox settings in your browser, then prompt for and save your API key",
+    )
+    p.add_argument("--no-browser", action="store_true", help="with --setup: print the settings link, don't open it")
+
+    sel = p.add_argument_group("selection (one is required unless --setup)")
     sel.add_argument("--delete-all", action="store_true", help="select every item in the account")
     sel.add_argument(
         "--filter-size",
@@ -73,7 +76,13 @@ def build_parser() -> argparse.ArgumentParser:
         choices=sorted(KINDS),
         help="limit to an item type (repeatable; default: all types)",
     )
-    p.add_argument("--env-file", metavar="PATH", type=Path, default=Path(".env"), help="path to .env file (default: ./.env)")
+    p.add_argument(
+        "--env-file",
+        metavar="PATH",
+        type=Path,
+        help="the .env file to read and --setup to write "
+        "(default: <clone>/.env from a clone, else ~/.config/torbox-cleaner/.env)",
+    )
     p.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
     return p
 
@@ -97,13 +106,42 @@ def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
 
-    if not (args.delete_all or args.filter_size is not None or args.filter_name):
-        parser.error("choose what to delete: --delete-all, --filter-size and/or --filter-name")
+    has_selection = args.delete_all or args.filter_size is not None or args.filter_name
+    if not (args.setup or has_selection):
+        parser.error("choose what to delete: --delete-all, --filter-size and/or --filter-name (or run --setup)")
 
-    load_dotenv(args.env_file)
-    api_key = os.environ.get("TORBOX_API_KEY", "").strip()
+    env_file = args.env_file or default_env_file()
+
+    if args.setup:
+        try:
+            api_key = run_setup(env_file, open_browser=not args.no_browser)
+        except (KeyboardInterrupt, EOFError):
+            print("Setup cancelled. Nothing was saved.", file=sys.stderr)
+            return 130
+        shell_key = os.environ.get(ENV_KEY)
+        if shell_key and shell_key != api_key:
+            print(f"Note: {ENV_KEY} is also set in your shell environment and takes precedence over {env_file}.")
+        os.environ[ENV_KEY] = api_key
+        if not has_selection:
+            print()
+            print("Next, preview what would be deleted:  torbox-cleaner --delete-all --dry-run")
+            return 0
+        print()
+
+    load_dotenv(env_file)
+    api_key = os.environ.get(ENV_KEY, "").strip()
     if not api_key:
-        parser.error("TORBOX_API_KEY is not set (environment or .env file)")
+        if not sys.stdin.isatty():
+            parser.error(f"{ENV_KEY} is not set and {env_file} has no key; run: torbox-cleaner --setup")
+        print(f"No TorBox API key found in {env_file}. Starting setup.\n")
+        try:
+            api_key = run_setup(env_file, open_browser=not args.no_browser)
+        except (KeyboardInterrupt, EOFError):
+            print("Setup cancelled. Nothing was saved.", file=sys.stderr)
+            return 130
+        print()
+    if not is_valid_api_key(api_key):
+        parser.error(f"{ENV_KEY} is not a valid TorBox API key; run: torbox-cleaner --setup")
 
     client = TorBoxClient(api_key)
     kinds = [KINDS[k] for k in (args.types or KINDS)]

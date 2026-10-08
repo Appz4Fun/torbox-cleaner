@@ -79,7 +79,8 @@ def fake(monkeypatch, tmp_path):
     client = FakeClient([item(1, "Big FraMeSToR", 60 * 1000**3), item(2, "small", 10)])
     monkeypatch.setattr(cli, "TorBoxClient", lambda key: client)
     monkeypatch.setattr(cli, "DELETE_INTERVAL", 0)
-    monkeypatch.setenv("TORBOX_API_KEY", "test")
+    monkeypatch.setenv("TORBOX_API_KEY", "3f2c8a1e-9b7d-4c5e-a1f0-6d2b9e8c7a41")
+    monkeypatch.setattr(cli, "default_env_file", lambda: tmp_path / ".env")
     monkeypatch.chdir(tmp_path)
     return client
 
