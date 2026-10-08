@@ -1,0 +1,25 @@
+[project]
+name = "torbox-cleaner"
+version = "0.1.0"
+description = "Bulk-delete cloud items (torrents, usenet, web downloads) from a TorBox account."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = []
+
+[project.scripts]
+torbox-cleaner = "torbox_cleaner.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/torbox_cleaner"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
