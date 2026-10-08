@@ -1,0 +1,116 @@
+/* Google developer-docs styling (Material 3 palette, Google Sans / Roboto). */
+
+:root {
+  --g-blue: #1a73e8;
+  --g-blue-dark: #1967d2;
+  --g-blue-tint: #e8f0fe;
+  --g-red: #d93025;
+  --g-red-tint: #fce8e6;
+  --g-yellow: #f9ab00;
+  --g-yellow-tint: #fef7e0;
+  --g-green: #188038;
+  --g-green-tint: #e6f4ea;
+  --g-grey-900: #202124;
+  --g-grey-700: #5f6368;
+  --g-grey-300: #dadce0;
+  --g-grey-100: #f1f3f4;
+  --g-grey-50: #f8f9fa;
+
+  --vp-font-family-base: 'Roboto', 'Google Sans', Arial, sans-serif;
+  --vp-font-family-mono: 'Google Sans Mono', 'Roboto Mono', ui-monospace, monospace;
+
+  --vp-c-brand-1: var(--g-blue);
+  --vp-c-brand-2: var(--g-blue-dark);
+  --vp-c-brand-3: var(--g-blue);
+  --vp-c-brand-soft: var(--g-blue-tint);
+
+  --vp-c-text-1: var(--g-grey-900);
+  --vp-c-text-2: var(--g-grey-700);
+  --vp-c-divider: var(--g-grey-300);
+  --vp-c-bg-soft: var(--g-grey-50);
+  --vp-c-bg-alt: var(--g-grey-50);
+  --vp-code-bg: var(--g-grey-100);
+  --vp-code-color: #37474f;
+
+  --vp-c-tip-1: var(--g-green);
+  --vp-c-tip-soft: var(--g-green-tint);
+  --vp-c-warning-1: #b06000;
+  --vp-c-warning-soft: var(--g-yellow-tint);
+  --vp-c-danger-1: var(--g-red);
+  --vp-c-danger-soft: var(--g-red-tint);
+  --vp-c-note-1: var(--g-blue-dark);
+  --vp-c-note-soft: var(--g-blue-tint);
+
+  --vp-button-brand-bg: var(--g-blue);
+  --vp-button-brand-hover-bg: var(--g-blue-dark);
+  --vp-button-brand-active-bg: var(--g-blue-dark);
+}
+
+.dark {
+  --g-blue: #8ab4f8;
+  --g-blue-dark: #aecbfa;
+  --vp-c-brand-soft: rgba(138, 180, 248, 0.16);
+  --vp-c-text-1: #e8eaed;
+  --vp-c-text-2: #9aa0a6;
+  --vp-c-divider: #3c4043;
+  --vp-c-bg: #202124;
+  --vp-c-bg-soft: #292a2d;
+  --vp-c-bg-alt: #17181b;
+  --vp-code-bg: #303134;
+  --vp-code-color: #e8eaed;
+  --vp-button-brand-text: #202124;
+  --vp-c-tip-soft: rgba(129, 201, 149, 0.16);
+  --vp-c-warning-soft: rgba(253, 214, 99, 0.14);
+  --vp-c-danger-soft: rgba(242, 139, 130, 0.16);
+  --vp-c-note-soft: rgba(138, 180, 248, 0.16);
+}
+
+/* Headings use Google Sans, like developers.google.com */
+.vp-doc h1,
+.vp-doc h2,
+.vp-doc h3,
+.VPNavBarTitle .title,
+.VPHero .name,
+.VPHero .text,
+.VPFeature .title {
+  font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
+  letter-spacing: 0;
+}
+
+.vp-doc h1 { font-weight: 400; font-size: 2.25rem; }
+.vp-doc h2 { font-weight: 400; border-top: none; padding-top: 16px; }
+.vp-doc h3 { font-weight: 500; }
+
+.vp-doc p,
+.vp-doc li { line-height: 1.6; }
+
+/* Flat, outlined surfaces instead of shadows */
+.VPFeature,
+.vp-doc div[class*='language-'] {
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 8px;
+}
+
+.vp-doc :not(pre) > code {
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
+/* Callouts: left accent bar like Google's "Caution"/"Note" asides */
+.custom-block {
+  border: none;
+  border-left: 4px solid var(--vp-c-note-1);
+  border-radius: 0 8px 8px 0;
+}
+.custom-block.tip { border-left-color: var(--vp-c-tip-1); }
+.custom-block.warning { border-left-color: var(--vp-c-warning-1); }
+.custom-block.danger { border-left-color: var(--vp-c-danger-1); }
+
+/* Pill-shaped buttons (Material 3) */
+.VPButton { border-radius: 20px !important; font-family: 'Google Sans', sans-serif; font-weight: 500; }
+
+.vp-doc table { border-radius: 8px; overflow: hidden; }
+.vp-doc th { background: var(--vp-c-bg-soft); font-family: 'Google Sans', sans-serif; font-weight: 500; }
+
+.vp-doc a { text-decoration: none; font-weight: 400; }
+.vp-doc a:hover { text-decoration: underline; }
