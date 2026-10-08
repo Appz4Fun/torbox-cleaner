@@ -189,6 +189,14 @@ continues to use `/`. To check a repository subpath locally:
 DOCS_BASE=/torbox-cleaner/ npm run docs:build
 ```
 
+## Source releases
+
+Push a signed `vMAJOR.MINOR.PATCH` tag whose commit is on `main` and whose
+version matches `pyproject.toml` to publish a GitHub release automatically.
+The source archive contains the Python package, installation metadata and lock
+file, README, GPL license, and an empty API-key example. Documentation website
+sources, tests, and credentials are excluded. A SHA-256 checksum is included.
+
 ## License
 
 GPL-2.0-only. See [LICENSE](LICENSE).
